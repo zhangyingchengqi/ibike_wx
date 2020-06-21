@@ -145,12 +145,14 @@ Page({
           url: '../identity/identity',
         });
       } else if (status == 3) {
-        scanCode()
+        that.scanCode()
       } 
     }
   },
 
-  scanCode:function(){
+  scanCode:function(){     // 这样写，则scanCode是当前 vm的一个成员方法
+   // function scanCode(){
+    var that=this;
      //扫码
      wx.scanCode({
       success:function(  res ){
