@@ -57,6 +57,43 @@ Page({
 
   },
 
+  formSubmit: function (e) {
+    console.log("事件信息:"+e)
+    var phoneNum = e.detail.value.phoneNum
+    var verifyCode = e.detail.value.verifyCode
+    //var openid = getApp().globalData.openid    //确认     用户的id
+    var openid=wx.getStorageSync('openid')
+    console.log("openid:"+openid);
+    wx.request({
+      url: "http://localhost:8080/yc74ibike/verify",
+      header: { 'content-type': 'application/x-www-form-urlencoded' },
+      data: {
+        phoneNum: phoneNum,
+        verifyCode: verifyCode,
+        status: 1,
+        id: openid
+      },
+      method: "POST",
+      success: function (res) {
+        console.log("手机验证码校验结果:"+res);
+        if (res.data&& res.data.code==0) {
+          wx.showModal({          //模式对话框
+            title: '提示',
+            content: '注册用户失败,原因:'+ res.data.msg +'！',
+            showCancel: false
+          })
+          return;
+        }
+        var globalData = getApp().globalData
+        globalData.phoneNum = phoneNum     //在全局变量保存当前注册的号码
+        //到充值页
+         wx.navigateTo({
+                url: '../deposit/deposit'
+          })  
+      }
+    });
+  },
+
   /**
    * Lifecycle function--Called when page is initially rendered
    */
