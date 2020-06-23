@@ -85,7 +85,18 @@ Page({
                      },
                     iconPath:"../images/pay.png",
                     clickable:true
-                  }
+                  },{ //报修
+                    id: 6,
+                    iconPath: "../images/repair.png",
+                    position: {
+                      width: 35,
+                      height: 35,
+                      left: width - 42,
+                      top: height - 203.
+                    },
+                    //是否可点击
+                    clickable: true
+                  } 
                 ]
               })
           }
@@ -128,6 +139,22 @@ Page({
     if(   e.controlId==2){
       //地图复位
       that.mapCtx.moveToLocation();
+    }else if(  e.controlId==4  ){
+      wx.navigateTo({
+        url: '../pay/pay',
+      });
+    }else if (e.controlId == 6) {
+      //TODO: 以后加入必须登录用户才能报修
+      // var phoneNum=getApp().globalData.phoneNum;
+      // if(  phoneNum==null|| phoneNum.equals("")){
+      //   wx.showToast({
+      //     title: '没有登录，不能报修',
+      //   });
+      //   return;
+      // }
+      wx.navigateTo({
+        url: '../repair/repair',
+      })
     }else if(  e.controlId==3  ){
       //获取全局变量status,根据它的值进行页面跳转
        var status=getApp().globalData.status;
@@ -175,7 +202,16 @@ Page({
              "content-type":"application/json"
            },
            success:function(  res ){
-              console.log(  res );
+              //console.log(  res );
+              if(  res.data.code==0){
+                wx.showToast({
+                  title: '开锁失败,原因:'+res.data.msg,
+                  icon: "none"
+
+                });
+                return;
+              }
+              //TODO: 计费,计时
            }
           });
       }

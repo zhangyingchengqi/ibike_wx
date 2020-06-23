@@ -22,6 +22,7 @@ Page({
      });
   },
   genVerifyCode:function( e ){
+    console.log( "genVerifyCode");
     //国家编码
     var index=this.data.countryCodeIndex;
     var countryCode = this.data.countryCodes[index];
