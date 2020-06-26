@@ -63,7 +63,7 @@ Page({
     var phoneNum = e.detail.value.phoneNum
     var verifyCode = e.detail.value.verifyCode
     //var openid = getApp().globalData.openid    //确认     用户的id
-    var openid=wx.getStorageSync('openid')
+    var openid=wx.getStorageSync('openId')
     console.log("openid:"+openid);
     wx.request({
       url: "http://localhost:8080/yc74ibike/verify",
@@ -72,7 +72,8 @@ Page({
         phoneNum: phoneNum,
         verifyCode: verifyCode,
         status: 1,
-        id: openid
+        openId: openid,
+        uuid: wx.getStorageSync('uuid')
       },
       method: "POST",
       success: function (res) {

@@ -27,7 +27,7 @@ Page({
   },
 
   recharge: function () { 
-    var phoneNum=getApp().globalData.phoneNum;
+    var phoneNum=wx.getStorageSync('phoneNum')
     if(  phoneNum==null|| phoneNum==''){
       wx.showToast({
         title: '您还没有登录',
@@ -45,8 +45,8 @@ Page({
         //确认充值
         if (res.confirm) {
           //发送充值请求    
-          var phoneNum = getApp().globalData.phoneNum;
-          var openid = getApp().globalData.openid;   //在  app.js中存的
+          var phoneNum = wx.getStorageSync('phoneNum');
+          var openid = wx.getStorageSync('openId');   //在  app.js中存的
           var amount =  that.data.payMoney;
           wx.request({
             url: 'http://localhost:8080/yc74ibike/recharge',

@@ -113,9 +113,7 @@ Page({
         wx.setStorageSync('end_latitude', res.latitude);
         //longitude=res.longitude;
         //latitude=res.latitude;
-      }
-    });
-    //3。 获取用户的信息
+          //3。 获取用户的信息
     var uuid=wx.getStorageSync('uuid');
     var openId=wx.getStorageSync('openId');
     var phoneNum=wx.getStorageSync('phoneNum');
@@ -143,11 +141,12 @@ Page({
           wx.setStorageSync('end_longitude', undefined);
           wx.setStorageSync('end_latitude', undefined);
           wx.setStorageSync('status', 3);
-          
         }
       }
-
-    })
+    });
+      }
+    });
+  
     
   }
 })
