@@ -25,6 +25,7 @@ App({
               console.log(  res.data.openid+"\tunionid: "+ res.data.unionid);
               //保存这个 openid 到本地
               wx.setStorageSync('openid', res.data.openid);
+              wx.setStorageSync('status', 0);
             }
           });
         }else{

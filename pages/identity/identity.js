@@ -1,9 +1,6 @@
 // pages/identity/identity.js
 Page({
 
-  /**
-   * Page initial data
-   */
   data: {
 
   },
@@ -28,67 +25,13 @@ Page({
         if(  res.data.code==1){
           //更新全局变量中的status属性
           getApp().globalData.status = 3
+          wx.setStorageSync('status', 3);
           wx.navigateTo({
             url: '../index/index',
           });
         }
       }
     })
-  },
-
-  /**
-   * Lifecycle function--Called when page load
-   */
-  onLoad: function (options) {
-
-  },
-
-  /**
-   * Lifecycle function--Called when page is initially rendered
-   */
-  onReady: function () {
-
-  },
-
-  /**
-   * Lifecycle function--Called when page show
-   */
-  onShow: function () {
-
-  },
-
-  /**
-   * Lifecycle function--Called when page hide
-   */
-  onHide: function () {
-
-  },
-
-  /**
-   * Lifecycle function--Called when page unload
-   */
-  onUnload: function () {
-
-  },
-
-  /**
-   * Page event handler function--Called when user drop down
-   */
-  onPullDownRefresh: function () {
-
-  },
-
-  /**
-   * Called when page reach bottom
-   */
-  onReachBottom: function () {
-
-  },
-
-  /**
-   * Called when user click on the top right corner to share
-   */
-  onShareAppMessage: function () {
-
   }
+
 })

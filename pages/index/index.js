@@ -128,7 +128,8 @@ Page({
       })
     }else if(  e.controlId==3  ){
       //获取全局变量status,根据它的值进行页面跳转
-       var status=getApp().globalData.status;
+       //var status=getApp().globalData.status;
+       var status=wx.getStorageSync('status');
        if( status==0){
         //跳到注册页面
         wx.navigateTo({

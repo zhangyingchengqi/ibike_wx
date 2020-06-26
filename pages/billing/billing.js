@@ -85,6 +85,70 @@ Page({
      wx.navigateTo({
        url: '../index/index',
      })
+  }, 
+  // 结束骑行，清除定时器, 向后台发出请求，传足够的参数
+  endRide: function(){
+     //结束时间
+     var tmp = Date.parse(new Date()).toString();
+     tmp = tmp.substr(0, 10);
+     wx.setStorageSync('end_time', tmp);
+      //耗时
+      var times = (this.data.minuters * 60 + this.data.hours * 3600 + this.data.seconds);
+      wx.setStorageSync('time', false)
+      clearInterval(this.timer);
+      this.timer = "";
+      this.setData({
+        billing: "本次骑行耗时",
+        disabled: true
+      });  
+    //结束位置
+    // 2.获取并设置当前位置经纬度
+    //var longitude='';
+    //var latitude='';
+    wx.getLocation({
+      type: "gcj02",
+      success: (res) => {
+        console.log(res);
+        wx.setStorageSync('end_longitude', res.longitude);
+        wx.setStorageSync('end_latitude', res.latitude);
+        //longitude=res.longitude;
+        //latitude=res.latitude;
+      }
+    });
+    //3。 获取用户的信息
+    var uuid=wx.getStorageSync('uuid');
+    var openId=wx.getStorageSync('openId');
+    var phoneNum=wx.getStorageSync('phoneNum');
+    wx.request({
+      url: 'http://localhost:8080/yc74ibike/payMoney',
+      method:'POST',
+      data:{
+        bid: wx.getStorageSync('bid'),
+        longitude:  wx.getStorageSync('end_longitude'),
+        latitude: wx.getStorageSync('end_latitude'),
+        uuid: uuid,
+        openId:openId,
+        phoneNum:phoneNum,
+        startTime: wx.getStorageSync('start_time'),
+        endTime:wx.getStorageSync('end_time'),
+        totalTime: times
+      },
+      header: { 'content-type': 'application/x-www-form-urlencoded' },
+      success:function( res){
+        console.log(  res  );
+        if(   res.data.code==1){
+          wx.setStorageSync('start_time', undefined);
+          wx.setStorageSync('end_time', undefined);
+          wx.setStorageSync('bid', undefined);
+          wx.setStorageSync('end_longitude', undefined);
+          wx.setStorageSync('end_latitude', undefined);
+          wx.setStorageSync('status', 3);
+          
+        }
+      }
+
+    })
+    
   }
 })
 
@@ -121,3 +185,5 @@ function dateDif(beginDate,endDate){
 	};
 	return res;	
 }
+
+

@@ -87,9 +87,10 @@ Page({
         }
         var globalData = getApp().globalData
         globalData.phoneNum = phoneNum     //在全局变量保存当前注册的号码
-
+        wx.setStorageSync('phoneNum', phoneNum);
         getApp().globalData.status=1;
 
+        wx.setStorageSync('status',1);
         //到充值页
          wx.navigateTo({
                 url: '../deposit/deposit'
