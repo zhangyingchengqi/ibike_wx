@@ -70,9 +70,17 @@ function report(  that,bikeNo,types,phoneNum,openid, latitude,longitude   ){
     method: 'POST',
     success: function (res) {
       console.log( res );
+      if( res.data.code==0){
+        wx.showToast({
+          title: res.data.msg,
+          duration:5000
+        });
+        return;
+      }
       if( res.data.code==1){
         wx.showToast({
           title: '报修成功...谢谢',
+          duration:5000
         });
         wx.navigateTo({
             url: '../index/index',

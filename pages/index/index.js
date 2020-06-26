@@ -101,36 +101,7 @@ Page({
               })
           }
       });
-
-      //加载所有的可用的附近的前10台车
-      //获取附近的车，并显示
-     wx.request({
-      url:"http://localhost:8080/yc74ibike/findNearAll",
-      method:"POST",
-      data:{
-        latitude:that.data.latitude,
-        longitude:that.data.longitude,
-        status:1
-      },
-      success:function(res){
-        console.log( res );
-         const bikes=res.data.obj.map( item=>{
-           return {
-             bid: item.bid,
-             iconPath:"../images/bike.png",
-             width:35,
-             height:35,
-             latitude:item.latitude,
-             longitude:item.longitude
-           }
-         });
-         console.log(    bikes );
-         that.setData({
-          markers:bikes
-        });
-      }
-   });
-
+      findNearBikes(  that,that.data.latitude,that.data.longitude  );
   },
 
   controltap( e ){
@@ -173,7 +144,11 @@ Page({
         });
       } else if (status == 3) {
         that.scanCode()
-      } 
+      } else if( status==4){
+        wx.navigateTo({
+          url: '../billing/billing'
+        });
+      }
     }
   },
 
@@ -207,11 +182,19 @@ Page({
                 wx.showToast({
                   title: '开锁失败,原因:'+res.data.msg,
                   icon: "none"
-
                 });
                 return;
               }
-              //TODO: 计费,计时
+              console.log( res.data );
+              if( res.data.code==1){
+                //在本地存一下正在骑行的单车号
+                wx.setStorageSync('bid', bid);
+                wx.setStorageSync('status', 4);   //表示当前用户正在骑行中...
+                getApp().globalData.status = 4;  //当前骑行中.
+                wx.navigateTo({
+                  url: '../billing/billing'
+               });
+              }
            }
           });
       }
@@ -240,7 +223,7 @@ Page({
             time:new Date(),   //客户端的时间
             openid:openid,
             latitude:latitude,
-            longitutde:longitude,
+            longitude:longitude,
             url: 'index'
           },
           method:"POST"
@@ -251,46 +234,50 @@ Page({
 
   },
 
-  /**
-   * Lifecycle function--Called when page show
-   */
-  onShow: function () {
-    console.log(   "生命周期: -> onShow");
-  },
-
-  /**
-   * Lifecycle function--Called when page hide
-   */
-  onHide: function () {
-    console.log(   "生命周期: -> onHide");
-  },
-
-  /**
-   * Lifecycle function--Called when page unload
-   */
-  onUnload: function () {
-    console.log(   "生命周期: -> onUnload");
-  },
-
-  /**
-   * Page event handler function--Called when user drop down
-   */
-  onPullDownRefresh: function () {
-    console.log(   "生命周期: -> onPullDownRefresh");
-  },
-
-  /**
-   * Called when page reach bottom
-   */
-  onReachBottom: function () {
-    console.log(   "生命周期: -> onReachBottom");
-  },
-
-  /**
-   * Called when user click on the top right corner to share
-   */
-  onShareAppMessage: function () {
-    console.log(   "生命周期: -> onShareAppMessage");
+  regionchange:function( e ){
+    var that =this;
+   // e的事件type也两种值  begin，和 end
+   if(  e.type=='end'){
+    //要取出当前的位置，但请注意，这里不能用 wx.getLocation,因为它取的是设备的位置，这里要是移动后的地图位置. 
+    that.mapCtx.getCenterLocation({
+      success:function( res ){
+        //这时的经纬度为地图新位置的中心点的经纬度
+        findNearBikes(that,res.latitude, res.longitude);
+      }
+    });
   }
+}
 
 })
+
+function findNearBikes(that,latitude,longitude){
+  //加载所有的可用的附近的前10台车
+      //获取附近的车，并显示
+      wx.request({
+        url:"http://localhost:8080/yc74ibike/findNearAll",
+        method:"POST",
+        data:{
+          latitude:latitude,
+          longitude:longitude,
+          status:1
+        },
+        success:function(res){
+          console.log( res );
+           const bikes=res.data.obj.map( item=>{
+             return {
+               bid: item.bid,
+               iconPath:"../images/bike.png",
+               width:35,
+               height:35,
+               latitude:item.latitude,
+               longitude:item.longitude
+             }
+           });
+           console.log(    bikes );
+           that.setData({
+            markers:bikes
+          });
+        }
+     });
+
+    }
