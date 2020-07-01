@@ -15,7 +15,7 @@ Page({
   onLoad:function(e){
     // 实例化API核心类
       qqmapsdk = new QQMapWX({
-        key: 'YSBBZ-4BJRS-OWUO3-6SBKF-RLVXS-TSFDB'
+        key: ''
     });
 
   },
