@@ -10,7 +10,7 @@ Page({
   },
   onLoad:function(e){
     qqmapsdk = new QQMapWX({
-      key: 'YSBBZ-4BJRS-OWUO3-6SBKF-RLVXS-TSFDB'
+      key: ''
      });
   },
 
