@@ -3,6 +3,7 @@
 
 App({
   onLaunch: function () {
+    wx.setStorageSync('QQMapWX_key', 'YSBBZ-4BJRS-OWUO3-6SBKF-RLVXS-TSFDB');
     checkLogin();  
  
   },
