@@ -15,7 +15,9 @@ Page({
   onLoad:function(e){
     // 实例化API核心类
       qqmapsdk = new QQMapWX({
+
         key: wx.getStorageSync('QQMapWX_key')
+
     });
 
   },

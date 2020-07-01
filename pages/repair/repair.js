@@ -10,7 +10,9 @@ Page({
   },
   onLoad:function(e){
     qqmapsdk = new QQMapWX({
+
      key: wx.getStorageSync('QQMapWX_key')
+
      });
   },
 
