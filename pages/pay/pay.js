@@ -1,4 +1,7 @@
 // pages/pay/pay.js
+var QQMapWX = require('../../libs/qqmap-wx-jssdk.min.js');
+var qqmapsdk;
+
 Page({
 
   /**
@@ -9,6 +12,15 @@ Page({
     currentTab: 3, //默认选中标签
     payMoney: 10
   },
+  onLoad:function(e){
+    // 实例化API核心类
+      qqmapsdk = new QQMapWX({
+        key: 'YSBBZ-4BJRS-OWUO3-6SBKF-RLVXS-TSFDB'
+    });
+
+  },
+
+  
 
   //tab的切换,   因为界面   bindtap="switchNav"    switchNav事件是  Page的一个成员
   switchNav: function (e) {
@@ -58,6 +70,7 @@ Page({
             },
             success: function (res) {
               if(res.data.code==1) {
+                addLog(  phoneNum, openid, amount  );
                 wx.showModal({
                   title: '提示',
                   content: '充值成功！',
@@ -77,3 +90,53 @@ Page({
     })
   }
 })
+
+
+function addLog(  phoneNum, openid, amount   ){
+      //充值数据的埋点
+      wx.getLocation({
+        success: function(res) {
+          var lat = res.latitude;
+          var log = res.longitude;
+          console.log(  lat+"  "+log);
+          //埋点：记录用户充值的行为信息，以后做数据分析
+           //请求腾讯地图api查找省市区
+            qqmapsdk.reverseGeocoder({
+              location: {
+                latitude: lat,
+                longitude: log
+              },
+              success: function (res) {
+                console.log(  "腾讯地图的结果:"+res);
+                var address = res.result.address_component;
+                var province = address.province;
+                var city = address.city;
+                var district = address.district;
+                var street=address.street;
+                var street_number=address.street_number;
+                console.log("充值日志:"+province + " , " + city + " ," + district+","+province+","+city+","+district);
+                var dt = new Date();
+                var payTime=Date.parse(dt);
+                wx.request({
+                  url: "http://localhost:8080/yc74ibike/log/addPayLog",
+                  data: {
+                    openid: openid,
+                    phoneNum: phoneNum,
+                    amount: amount,
+                    lat: lat,
+                    log: log,
+                    province:province,
+                    city: city,
+                    district:district, 
+                    street:street,
+                    street_number: street_number,
+                    payDate: payTime
+                   },
+                  method: "POST"
+                 },
+                 )      
+              }
+            });         
+        },
+      });
+}

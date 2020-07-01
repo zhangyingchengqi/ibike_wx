@@ -1,7 +1,10 @@
 //app.js
+
+
 App({
   onLaunch: function () {
     checkLogin();  
+ 
   },
     //全局的状态: 相当于   application
    globalData: {

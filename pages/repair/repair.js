@@ -1,19 +1,29 @@
 // pages/repair/repair.js
+
+var QQMapWX = require('../../libs/qqmap-wx-jssdk.min.js');
+var qqmapsdk;
+
 Page({
   data: {
     bikeNo:'',
     types:[]
   },
+  onLoad:function(e){
+    qqmapsdk = new QQMapWX({
+      key: 'YSBBZ-4BJRS-OWUO3-6SBKF-RLVXS-TSFDB'
+     });
+  },
+
    // 提交到服务器
    formSubmit: function (e) {   //表单事件对象
     var that=this;
     var bikeNo = e.detail.value.bikeNo;
     //也可以
-    //var bikeNo=this.data.bikeNo;
+    var bikeNo=this.data.bikeNo;
     var types = this.data.types;
-    var globalData = getApp().globalData;
-    var phoneNum = globalData.phoneNum;
-    var openid=wx.getStorageSync('openid');
+    //var globalData = getApp().globalData;
+    var phoneNum = wx.getStorageSync('phoneNum');
+    var openid=wx.getStorageSync('openId');
     wx.getLocation({
       success:function(res){
         var latitude=res.latitude;
@@ -56,36 +66,60 @@ Page({
 
 
 function report(  that,bikeNo,types,phoneNum,openid, latitude,longitude   ){
-  wx.request({
-    url: "http://localhost:8080/yc74ibike/repair",
-    header: { 'content-type': 'application/x-www-form-urlencoded' },
-    data: {
-      phoneNum: phoneNum,
-      bid: bikeNo,
-      types: types,
-      openid:openid,
-      latitude:latitude,
-      longitude:longitude
+  qqmapsdk.reverseGeocoder({
+    location: {
+      latitude: latitude,
+      longitude: longitude
     },
-    method: 'POST',
     success: function (res) {
-      console.log( res );
-      if( res.data.code==0){
-        wx.showToast({
-          title: res.data.msg,
-          duration:5000
-        });
-        return;
-      }
-      if( res.data.code==1){
-        wx.showToast({
-          title: '报修成功...谢谢',
-          duration:5000
-        });
-        wx.navigateTo({
-            url: '../index/index',
+      var address = res.result.address_component;
+      var province = address.province;
+      var city = address.city;
+      var district = address.district;
+      var street=address.street;
+      var street_number=address.street_number;
+      console.log("充值日志:"+province + " , " + city + " ," + district+","+province+","+city+","+district);
+      var dt = new Date();
+      var payTime=Date.parse(dt);
+      wx.request({
+        url: "http://localhost:8080/yc74ibike/repair",
+        header: { 'content-type': 'application/x-www-form-urlencoded' },
+        data: {
+          phoneNum: phoneNum,
+          bid: bikeNo,
+          types: types,
+          openid:openid,
+          latitude:latitude,
+          longitude:longitude,
+          loc:[latitude,longitude],
+          province:province,
+          city:city,
+          district:district,
+          street:street,
+          street_number:street_number,
+          repairTime:payTime
+        },
+        method: 'POST',
+        success: function (res) {
+          console.log( res );
+          if( res.data.code==0){
+            wx.showToast({
+              title: res.data.msg,
+              duration:5000
+            });
+            return;
+          }
+          if( res.data.code==1){
+            wx.showToast({
+              title: '报修成功...谢谢',
+              duration:5000
+            });
+            wx.navigateTo({
+                url: '../index/index',
+          });
+          }
+        }
       });
-      }
     }
-  })
+})
 }
